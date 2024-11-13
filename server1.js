@@ -10,7 +10,7 @@ app.use(express.json());
 
 const CLIENT_ID = process.env.CONSUMER_KEY; // Your Twitter API Client ID
 const CLIENT_SECRET = process.env.CONSUMER_SECRET; // Your Twitter API Client Secret
-const REDIRECT_URI = 'http://127.0.0.1:3000/callback'; // Your callback URL
+const REDIRECT_URI = 'https://serverless.on-demand.io/apps/tweet/callback'; // Your callback URL
 const TOKEN_URL = 'https://api.twitter.com/2/oauth2/token';
 
 /**
