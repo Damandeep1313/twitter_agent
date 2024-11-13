@@ -9,7 +9,7 @@ const readline = createInterface({
 
 const CLIENT_ID = process.env.CONSUMER_KEY; // Your Twitter API Client ID
 const CLIENT_SECRET = process.env.CONSUMER_SECRET; // Your Twitter API Client Secret
-const REDIRECT_URI = 'http://127.0.0.1:3000/callback'; // Your callback URL
+const REDIRECT_URI = 'https://serverless.on-demand.io/apps/tweet/callback'; // Your callback URL
 const AUTHORIZATION_URL = 'https://twitter.com/i/oauth2/authorize';
 const TOKEN_URL = 'https://api.twitter.com/2/oauth2/token';
 const SCOPES = 'tweet.read users.read follows.read follows.write tweet.write'; // Updated scopes
