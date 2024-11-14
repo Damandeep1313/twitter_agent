@@ -1,16 +1,15 @@
 const express = require('express');
 const axios = require('axios');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
 const app = express();
 const port = 3000;
 app.use(express.json());
 
-const CLIENT_ID = process.env.CONSUMER_KEY;
-const CLIENT_SECRET = process.env.CONSUMER_SECRET;
-const REDIRECT_URI = 'http://127.0.0.1:3000/callback';
+// Hardcoded values for Twitter API credentials and callback URL
+const CLIENT_ID = 'b2IxOC1EOWQzVnk1cmVKVlRvT1A6MTpjaQ';
+const CLIENT_SECRET = '5rlNun5FLNgh8N5mxWUAYVlNDXXfJDVQ6m5x3bzwg2z1f7pmnv';
+const ACCESS_TOKEN = '1850263893421211648-zzCwgup9ko4fYPPfvapcl80OpNdbKr';
+const ACCESS_TOKEN_SECRET = 'JntQIa9BkMUEsucAOZT1f7igKdd7q8C5WIwgmaYYp2LjH';
+const REDIRECT_URI = 'https://serverless.on-demand.io/apps/tweet/callback'; // Updated redirect URI
 const TOKEN_URL = 'https://api.twitter.com/2/oauth2/token';
 
 /**
@@ -21,6 +20,7 @@ async function getAccessToken(code, codeVerifier) {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: 'Basic ' + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
     };
+    console.log('Code verifier:', codeVerifier);
 
     const body = new URLSearchParams({
         grant_type: 'authorization_code',
@@ -30,50 +30,20 @@ async function getAccessToken(code, codeVerifier) {
     });
 
     try {
-        const response = await axios.post(TOKEN_URL, body.toString(), { headers }); // Use axios to send POST request
-        console.log('code verifier:', codeVerifier);
-        return response.data; // Return the data from the response
+        const response = await axios.post(TOKEN_URL, body.toString(), { headers });
+        console.log('Access Token Response:', response.data);
+        return response.data;
     } catch (error) {
         console.error('Error fetching access token:', error.response ? error.response.data : error.message);
-        throw error; // Re-throw error for handling in the callback
-    }
-}
-
-/**
- * Function to fetch and upload media from a URL to Twitter
- */
-async function uploadMediaFromUrl(accessToken, mediaUrl) {
-    const url = 'https://upload.twitter.com/1.1/media/upload.json';
-
-    try {
-        // Fetch media data from the URL
-        const mediaResponse = await axios.get(mediaUrl, { responseType: 'arraybuffer' });
-        const mediaData = Buffer.from(mediaResponse.data, 'binary').toString('base64');
-
-        // Upload the media to Twitter
-        const uploadResponse = await axios.post(url, new URLSearchParams({
-            media_data: mediaData
-        }), {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        });
-
-        return uploadResponse.data.media_id_string;
-    } catch (error) {
-        console.error('Error uploading media:', error.response ? error.response.data : error.message);
         throw error;
     }
 }
 
-
-
 app.get('/callback', async (req, res) => {
-    console.log('Callback received:', req.query); // This will show the query parameters
+    console.log('Callback received:', req.query);
     const authorizationCode = req.query.code;
     const error = req.query.error;
-    const codeVerifier = 'challenge'; // Ensure you have this value available
+    const codeVerifier = 'challenge';
     
     if (error) {
         console.error('Error in callback:', error);
@@ -84,11 +54,8 @@ app.get('/callback', async (req, res) => {
     if (authorizationCode) {
         console.log('Authorization Code:', authorizationCode);
         
-        // Call getAccessToken to exchange authorization code for access token
         try {
             const tokenResponse = await getAccessToken(authorizationCode, codeVerifier);
-            console.log('Access Token Response:', tokenResponse);
-
             if (tokenResponse.access_token) {
                 res.send(`Authorization successful! Access Token: ${tokenResponse.access_token}`);
             } else {
@@ -104,25 +71,16 @@ app.get('/callback', async (req, res) => {
     }
 });
 
-
-/**
- * Function to post a tweet with optional media
- */
-async function writeTweet(accessToken, tweet, mediaId = null) {
+async function writeTweet(accessToken, tweet) {
     const url = 'https://api.twitter.com/2/tweets';
-    const body = {
-        text: tweet,
-        ...(mediaId && { media: { media_ids: [mediaId] } })
-    };
 
     try {
-        const response = await axios.post(url, body, {
+        const response = await axios.post(url, { text: tweet }, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
                 'Content-Type': 'application/json'
             }
         });
-
         return response.data;
     } catch (error) {
         console.error('Error posting tweet:', error.response ? error.response.data : error.message);
@@ -130,9 +88,6 @@ async function writeTweet(accessToken, tweet, mediaId = null) {
     }
 }
 
-/**
- * Endpoint to post a tweet with text and optional media URL
- */
 app.post("/post/tweet", async (req, res) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
@@ -144,29 +99,17 @@ app.post("/post/tweet", async (req, res) => {
         return res.status(400).json({ error: 'Access token is missing in Authorization header.' });
     }
 
-    const { text, mediaUrl } = req.body;
+    const { text } = req.body;
 
     try {
-        let mediaId = null;
-
-        // If a media URL is provided, upload the media from the URL
-        if (mediaUrl) {
-            mediaId = await uploadMediaFromUrl(access_token, mediaUrl);
-            console.log('Media uploaded with ID:', mediaId);
-        }
-
-        // Post the tweet with or without media
-        const tweetResponse = await writeTweet(access_token, text, mediaId);
+        const tweetResponse = await writeTweet(access_token, text);
         console.log('Tweet response:', tweetResponse);
-
-        res.json({ message: "Tweet sent successfully.", tweetResponse });
+        res.json({ message: "Tweet sent successfully." });
     } catch (error) {
-        console.error('Error posting tweet:', error);
         res.status(500).json({ error: 'Error posting tweet. Please try again.' });
     }
 });
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://127.0.0.1:${port}`);
 });
