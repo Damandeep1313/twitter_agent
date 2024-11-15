@@ -41,7 +41,7 @@ async function getAccessToken(code, codeVerifier) {
 }
 
 app.get('/callback', async (req, res) => {
-    console.log('Callback received:', req.query); // This will show the query parameters
+    console.log('Callback received:', req.query); // Log the query parameters
     const authorizationCode = req.query.code;
     const error = req.query.error;
     const codeVerifier = 'challenge'; // Ensure you have this value available
@@ -61,7 +61,10 @@ app.get('/callback', async (req, res) => {
             console.log('Access Token Response:', tokenResponse);
 
             if (tokenResponse.access_token) {
-                res.send(`Authorization successful! Access Token: ${tokenResponse.access_token}`);
+                // Add the "Bearer " prefix to the token
+                const bearerToken = `Bearer ${tokenResponse.access_token}`;
+                console.log('Bearer Token:', bearerToken); // Ensure it logs correctly
+                res.send(`Authorization successful! Access Token: ${bearerToken}`);
             } else {
                 res.send('Failed to retrieve access token: ' + JSON.stringify(tokenResponse));
             }
@@ -74,6 +77,7 @@ app.get('/callback', async (req, res) => {
         res.send('Authorization code not found. Please try again.');
     }
 });
+
 
 async function writeTweet(accessToken, tweet) {
     const url = 'https://api.twitter.com/2/tweets';
