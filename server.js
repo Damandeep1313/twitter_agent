@@ -5,10 +5,10 @@ const port = 3000;
 app.use(express.json());
 
 // Hardcoded values for Twitter API credentials and callback URL
-const CLIENT_ID = 'b2IxOC1EOWQzVnk1cmVKVlRvT1A6MTpjaQ';
-const CLIENT_SECRET = '5rlNun5FLNgh8N5mxWUAYVlNDXXfJDVQ6m5x3bzwg2z1f7pmnv';
-const ACCESS_TOKEN = '1850263893421211648-zzCwgup9ko4fYPPfvapcl80OpNdbKr';
-const ACCESS_TOKEN_SECRET = 'JntQIa9BkMUEsucAOZT1f7igKdd7q8C5WIwgmaYYp2LjH';
+const CLIENT_ID = 'Qzl2QWFsQ1pEMlZFZEU3Tlg3dFE6MTpjaQ';
+const CLIENT_SECRET = 'sDmQxQUE4fDyM3Pw-LWP3ckb5Ov_wKqua_DLb_rQYdYufCZn8';
+const ACCESS_TOKEN = '1764355073419710464-vSHeCWDtDcDtYvObtSiz0BKfnGTHeQ';
+const ACCESS_TOKEN_SECRET = 'LfVaof2gkMB1gvrnAwRVoWd8mqWrcuBXCaZ6dV5cRsec9';
 const REDIRECT_URI = 'https://serverless.on-demand.io/apps/tweet/callback'; // Updated redirect URI
 const TOKEN_URL = 'https://api.twitter.com/2/oauth2/token';
 
