@@ -6,7 +6,7 @@ app.use(express.json());
 
 // Hardcoded values for Twitter API credentials and callback URL
 const CLIENT_ID = 'Qzl2QWFsQ1pEMlZFZEU3Tlg3dFE6MTpjaQ';
-const CLIENT_SECRET = 'sDmQxQUE4fDyM3Pw-LWP3ckb5Ov_wKqua_DLb_rQYdYufCZn8';
+const CLIENT_SECRET = 'sDmQxQUE4fDyM3Pw-LWP3ckb5Ov_wKqua_DLb_rQYdYufCZn8s';
 const ACCESS_TOKEN = '1764355073419710464-vSHeCWDtDcDtYvObtSiz0BKfnGTHeQ';
 const ACCESS_TOKEN_SECRET = 'LfVaof2gkMB1gvrnAwRVoWd8mqWrcuBXCaZ6dV5cRsec9';
 const REDIRECT_URI = 'https://serverless.on-demand.io/apps/tweet/callback'; // Updated redirect URI
